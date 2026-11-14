@@ -1,0 +1,32 @@
+﻿# Dependencies
+node_modules/
+*/node_modules/
+
+# Production builds
+dist/
+*/dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*/.env
+*/.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Git backups from migration
+.git.bak/
+*/.git.bak/
+
+# Legacy folder wrapper & junction
+crest-backend/
+Crest-ui/
+
+# OS metadata
+.DS_Store
+Thumbs.db
