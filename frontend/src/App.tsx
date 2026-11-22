@@ -5,6 +5,8 @@ import AuthLayout from './layouts/AuthLayout';
 import NewEntryPage from './pages/NewEntryPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import JournalListPage from './pages/JournalListPage';
 import { useJournalStore } from './store/journalStore';
 import { useAuthStore } from './store/authStore';
@@ -65,6 +67,8 @@ function App() {
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
         </Route>
 
