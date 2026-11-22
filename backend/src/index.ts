@@ -21,6 +21,11 @@ app.get("/", (req: Request, res: Response) => {
 
 import userRoutes from "./routes/user.routes.js";
 import entryRoutes from "./routes/entry.routes.js";
+import healthRoutes from "./routes/health.routes.js";
+
+// Health check routes
+app.use("/health", healthRoutes);
+app.use("/api/health", healthRoutes);
 
 app.use("/api/users", userRoutes);
 app.use("/api/entries", entryRoutes);

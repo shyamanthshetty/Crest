@@ -10,8 +10,8 @@ export const handleCreateEntry = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(400).json({
-        error : "unauthorized"
+      return res.status(401).json({
+        error : "Unauthorized"
       });
     }
 
