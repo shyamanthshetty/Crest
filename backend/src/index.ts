@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { requestLogger } from "./middleware/requestLogger.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors({
   origin: "http://localhost:5173", // The default Vite dev server URL
   credentials: true,
 }));
+app.use(requestLogger);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
