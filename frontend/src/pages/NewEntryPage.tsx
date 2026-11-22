@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useJournalStore } from '../store/journalStore';
 
@@ -152,7 +152,7 @@ export default function NewEntryPage() {
                <div>
                   <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-slate-400 mb-4">Current Mood</h3>
                   <div className="flex gap-2">
-                     {['ðŸ˜„', 'ðŸ˜Œ', 'ðŸ¤”', 'ðŸ˜´', 'ðŸ˜¤'].map(emoji => (
+                     {['😄', '😌', '🤔', '😴', '😤'].map(emoji => (
                          <button 
                             key={emoji}
                             onClick={() => handleUpdate({ mood: activeEntry.mood === emoji ? null : emoji })}

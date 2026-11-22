@@ -3,11 +3,11 @@ import { entryService } from '../services/entryService';
 import type { EntryData, CreateEntryPayload, UpdateEntryPayload } from '../services/entryService';
 
 export interface Transaction {
-    id: string;
-    amount: number;
-    type: 'expense' | 'income';
-    category: string;
-    note?: string;
+  id: string;
+  amount: number;
+  type: 'expense' | 'income';
+  category: string;
+  note?: string;
 }
 
 export interface JournalEntry {
@@ -18,7 +18,7 @@ export interface JournalEntry {
   mood: string | null;
   transactions: Transaction[];
   location?: string;
-  media?: string[]; 
+  media?: string[];
 }
 
 interface JournalState {
@@ -26,20 +26,33 @@ interface JournalState {
   customCategories: string[];
   isLoading: boolean;
   error: string | null;
-  
+
   // API Actions
   fetchEntries: () => Promise<void>;
   createEntry: (payload?: CreateEntryPayload) => Promise<JournalEntry>;
   updateEntry: (id: string, updates: Partial<JournalEntry>) => void;
   syncEntry: (id: string) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
-  
+
   // Local-only actions (transactions are synced via syncEntry)
   addTransaction: (id: string, transaction: Omit<Transaction, 'id'>) => void;
   removeTransaction: (entryId: string, transactionId: string) => void;
   addCustomCategory: (category: string) => void;
   clearError: () => void;
 }
+
+// Normalize any corrupted legacy emojis to their proper Unicode emoji
+const normalizeMood = (mood: string | null | undefined): string | null => {
+  if (!mood) return null;
+  const legacyMap: Record<string, string> = {
+    'ðŸ˜„': '😄',
+    'ðŸ˜Œ': '😌',
+    'ðŸ¤”': '🤔',
+    'ðŸ˜´': '😴',
+    'ðŸ˜¤': '😤',
+  };
+  return legacyMap[mood] || mood;
+};
 
 // Map backend response to our frontend shape
 function mapEntryData(data: EntryData): JournalEntry {
@@ -48,7 +61,7 @@ function mapEntryData(data: EntryData): JournalEntry {
     date: data.date || data.createdAt || new Date().toISOString(),
     title: data.title || '',
     content: data.content || '',
-    mood: data.mood || null,
+    mood: normalizeMood(data.mood),
     transactions: (data.transactions || []).map(t => ({
       id: t.id || (Date.now().toString() + Math.random().toString(36).substring(2, 9)),
       amount: t.amount,
@@ -166,12 +179,12 @@ export const useJournalStore = create<JournalState>()(
     addTransaction: (id, transaction) => set((state) => {
       const entry = state.entries[id];
       if (!entry) return state;
-      
+
       const newTransaction: Transaction = {
         ...transaction,
         id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       };
-      
+
       return {
         entries: {
           ...state.entries,
@@ -186,7 +199,7 @@ export const useJournalStore = create<JournalState>()(
     removeTransaction: (entryId, transactionId) => set((state) => {
       const entry = state.entries[entryId];
       if (!entry) return state;
-      
+
       return {
         entries: {
           ...state.entries,
