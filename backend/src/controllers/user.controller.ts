@@ -1,6 +1,7 @@
 import {type Request , type Response } from "express"
 import jwt from "jsonwebtoken";
 import {createUser , findUserByEmail , checkPassword, generateResetToken, resetPassword} from "../services/user.service.js"
+import { emailService } from "../services/email.service.js";
 
 const generateToken = (user: { id: string; email: string }) => {
   return jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
@@ -94,16 +95,17 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
         const token = await generateResetToken(email);
 
-        // Always return success to prevent email enumeration attacks
-        // In production, you would send this token via email instead of returning it
+        // If user exists, dispatch password reset email (handles real SMTP or dev simulation)
         if (token) {
-            console.log(`[DEV] Password reset token for ${email}: ${token}`);
+            await emailService.sendPasswordResetEmail(email, token);
         }
+
+        const isProduction = process.env.NODE_ENV === "production";
 
         return res.status(200).json({
             message: "If that email exists, a reset link has been sent.",
-            // ⚠️ Remove this in production — only here for dev/testing
-            ...(token && { resetToken: token }),
+            // Only expose token in development mode for easy manual/automated testing
+            ...(!isProduction && token ? { resetToken: token } : {}),
         });
     } catch (error: any) {
         console.error("Forgot Password Error:", error);

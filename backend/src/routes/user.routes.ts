@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { signup, login, forgotPassword, handleResetPassword } from "../controllers/user.controller.js";
+import { passwordResetLimiter, authLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
@@ -31,7 +32,7 @@ const router = Router();
  *       400:
  *         description: Bad request (e.g., missing fields)
  */
-router.post("/signup", signup);
+router.post("/signup", authLimiter, signup);
 
 /**
  * @openapi
@@ -61,7 +62,7 @@ router.post("/signup", signup);
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", login);
+router.post("/login", authLimiter, login);
 
 /**
  * @openapi
@@ -87,7 +88,7 @@ router.post("/login", login);
  *       400:
  *         description: Missing email
  */
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", passwordResetLimiter, forgotPassword);
 
 /**
  * @openapi
@@ -120,6 +121,6 @@ router.post("/forgot-password", forgotPassword);
  *       400:
  *         description: Invalid or expired token
  */
-router.post("/reset-password", handleResetPassword);
+router.post("/reset-password", passwordResetLimiter, handleResetPassword);
 
 export default router;

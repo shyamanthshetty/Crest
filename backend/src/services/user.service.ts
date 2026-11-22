@@ -30,7 +30,8 @@ export const generateResetToken = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    // Don't reveal whether the email exists — silently succeed
+    // Perform a dummy hash to equalize response times and mitigate timing side-channel attacks
+    await bcrypt.hash(crypto.randomBytes(32).toString("hex"), 10);
     return null;
   }
 
