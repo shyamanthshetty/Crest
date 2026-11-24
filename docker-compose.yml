@@ -29,6 +29,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/src:/app/src
+    env_file:
+      - ./backend/.env
     environment:
       PORT: 8080
       DATABASE_URL: "postgresql://root:1234@db:5432/crestDB?schema=public"

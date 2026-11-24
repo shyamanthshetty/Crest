@@ -19,20 +19,30 @@ class EmailService {
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT) || 587;
     const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
+    const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : undefined;
 
     if (host && user && pass) {
-      this.transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: {
-          user,
-          pass,
-        },
-      });
+      if (host.includes("gmail.com")) {
+        this.transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user,
+            pass,
+          },
+        });
+      } else {
+        this.transporter = nodemailer.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: {
+            user,
+            pass,
+          },
+        });
+      }
       this.isConfigured = true;
-      console.log(`[EmailService] Configured SMTP via ${host}:${port}`);
+      console.log(`[EmailService] Configured SMTP for ${user} (${host})`);
     } else {
       this.isConfigured = false;
       console.log("[EmailService] No SMTP credentials provided. Running in development/simulated mode.");
@@ -43,7 +53,8 @@ class EmailService {
    * Sends a generic email or logs it if SMTP is not configured
    */
   async sendMail({ to, subject, html, text }: SendMailOptions): Promise<{ success: boolean; previewUrl?: string }> {
-    const from = process.env.EMAIL_FROM || '"Crest" <noreply@crest.app>';
+    const user = process.env.SMTP_USER;
+    const from = process.env.EMAIL_FROM || (user ? `"Crest" <${user}>` : '"Crest" <noreply@crest.app>');
 
     if (this.isConfigured && this.transporter) {
       try {
